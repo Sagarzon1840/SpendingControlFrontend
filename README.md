@@ -2,6 +2,50 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.0.
 
+## Environment Configuration
+
+This project uses environment-specific configuration files to manage different settings for development and production.
+
+### Environment Files
+
+- `src/environments/environment.ts` - Development environment configuration
+- `src/environments/environment.prod.ts` - Production environment configuration
+
+### How Environment Selection Works
+
+Angular CLI automatically selects the appropriate environment file based on the build configuration:
+
+**Development Mode:**
+
+```bash
+ng serve
+# or
+npm start
+```
+
+Uses `environment.ts` with development settings (e.g., `apiUrl: 'https://localhost:7100'`)
+
+**Production Build:**
+
+```bash
+ng build --configuration production
+# or
+ng build --prod
+```
+
+The `fileReplacements` configuration in `angular.json` automatically replaces `environment.ts` with `environment.prod.ts` during the build process.
+
+### Configuration
+
+To set up your environment:
+
+1. Copy `.env.example` to create your local configuration
+2. Update `src/environments/environment.prod.ts` with your production API URL
+3. Always import environment in your code from the same location:
+   ```typescript
+   import { environment } from '../environments/environment';
+   ```
+
 ## Development server
 
 To start a local development server, run:
