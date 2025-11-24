@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo Installing dependencies...
+      - npm install -g @angular/cli@21
+      - npm ci
+
+  pre_build:
+    commands:
+      - echo Running pre-build checks...
+      - ng version
+
+  build:
+    commands:
+      - echo Building Angular application for production...
+      - ng build --configuration production
+
+  post_build:
+    commands:
+      - echo Build completed successfully
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: 'dist/spending-control-frontend/browser'
+
+cache:
+  paths:
+    - 'node_modules/**/*'
