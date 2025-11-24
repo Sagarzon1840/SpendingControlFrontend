@@ -19,7 +19,7 @@ SpendingControlFrontend is a personal finance management application built with 
 
 ### Tech Stack
 
-- **Angular 18**: Standalone components architecture
+- **Angular 21**: Standalone components architecture
 - **DevExtreme**: Professional UI components for data grids, forms, and charts
 - **Tailwind CSS**: Utility-first CSS framework for styling
 - **RxJS**: Reactive programming with observables
