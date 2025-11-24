@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DxDataGridModule, DxDateBoxModule } from 'devextreme-angular';
 import { MovementsService } from '../../../core/services/movements.service';
 import CustomStore from 'devextreme/data/custom_store';
+import DataSource from 'devextreme/data/data_source';
 import { lastValueFrom } from 'rxjs';
 
 @Component({
@@ -13,7 +14,7 @@ import { lastValueFrom } from 'rxjs';
   styleUrl: './movements-grid.css',
 })
 export class MovementsGridComponent implements OnInit {
-  dataSource: any;
+  dataSource: DataSource;
   fromDate: Date | null = null;
   toDate: Date | null = null;
 
@@ -23,39 +24,39 @@ export class MovementsGridComponent implements OnInit {
     this.fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
     this.toDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-    this.dataSource = new CustomStore({
-      load: (loadOptions: any) => {
-        const params: any = {};
-        if (loadOptions.skip) params.page = loadOptions.skip / (loadOptions.take || 10) + 1;
-        if (loadOptions.take) params.size = loadOptions.take;
-        if (this.fromDate) params.from = this.fromDate.toISOString();
-        if (this.toDate) params.to = this.toDate.toISOString();
+    this.dataSource = new DataSource({
+      store: new CustomStore({
+        load: (loadOptions: any) => {
+          const params: any = {};
+          if (loadOptions.skip) params.page = loadOptions.skip / (loadOptions.take || 10) + 1;
+          if (loadOptions.take) params.size = loadOptions.take;
+          if (this.fromDate) params.from = this.fromDate.toISOString();
+          if (this.toDate) params.to = this.toDate.toISOString();
 
-        return lastValueFrom(this.movementsService.getAll(params)).then((data: any) => {
-          const movements = data.data || data;
-          // Add a unique key to each row if it doesn't exist
-          const movementsWithKey = Array.isArray(movements)
-            ? movements.map((item: any, index: number) => ({
-                ...item,
-                _rowKey: item.id || `${item.type}_${item.date}_${index}`,
-              }))
-            : [];
+          return lastValueFrom(this.movementsService.getAll(params)).then((data: any) => {
+            const movements = data.data || data;
+            // Add a unique key to each row if it doesn't exist
+            const movementsWithKey = Array.isArray(movements)
+              ? movements.map((item: any, index: number) => ({
+                  ...item,
+                  _rowKey: item.id || `${item.type}_${item.date}_${index}`,
+                }))
+              : [];
 
-          return {
-            data: movementsWithKey,
-            totalCount: data.totalCount || movementsWithKey.length,
-          };
-        });
-      },
+            return {
+              data: movementsWithKey,
+              totalCount: data.totalCount || movementsWithKey.length,
+            };
+          });
+        },
+      }),
     });
   }
 
   ngOnInit(): void {}
 
-  onDateChanged(): void {
-    if (this.dataSource && this.dataSource.reload) {
-      this.dataSource.reload();
-    }
+  searchMovements(): void {
+    this.dataSource.reload();
   }
 
   handleGridError(e: any) {

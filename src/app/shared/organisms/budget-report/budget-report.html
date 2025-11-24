@@ -18,7 +18,9 @@
     ></dx-button>
   </div>
 
-  @if (reportData.length > 0) {
+  @if (isLoading) {
+  <div class="text-center text-gray-500 py-8">Cargando datos...</div>
+  } @else if (reportData.length > 0) {
   <dx-data-grid
     [dataSource]="reportData"
     [showBorders]="true"
@@ -69,7 +71,7 @@
     ></dxo-legend>
     <dxo-title text="Presupuesto vs Gastos"></dxo-title>
   </dx-chart>
-  } @if (reportData.length === 0 && !isLoading) {
+  } @else if (!isLoading) {
   <div class="text-center text-gray-500 py-8">
     No hay datos disponibles para el período seleccionado
   </div>

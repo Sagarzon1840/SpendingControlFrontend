@@ -97,15 +97,6 @@ export class BudgetsGridComponent implements OnInit {
     this.selectedMonth = newDate.getMonth() + 1;
   }
 
-  onDateChanged(e: any) {
-    if (e.value) {
-      const date = new Date(e.value);
-      this.selectedYear = date.getFullYear();
-      this.selectedMonth = date.getMonth() + 1;
-      this.refreshGrid();
-    }
-  }
-
   refreshGrid() {
     // Reload the grid with new year/month
     this.dataSource.reload();

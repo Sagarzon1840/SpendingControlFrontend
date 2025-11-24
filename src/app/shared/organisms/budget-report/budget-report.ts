@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   DxDataGridModule,
@@ -21,7 +21,7 @@ export class BudgetReportComponent implements OnInit {
   reportData: any[] = [];
   isLoading = false;
 
-  constructor(private reportsService: ReportsService) {
+  constructor(private reportsService: ReportsService, private cdr: ChangeDetectorRef) {
     // Inicializar con el mes actual
     const now = new Date();
     this.fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -29,7 +29,10 @@ export class BudgetReportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadReport();
+    // Cargar reporte inmediatamente después de inicializar
+    setTimeout(() => {
+      this.loadReport();
+    }, 0);
   }
 
   loadReport(): void {
@@ -39,18 +42,22 @@ export class BudgetReportComponent implements OnInit {
     }
 
     this.isLoading = true;
+    this.cdr.detectChanges(); // Forzar detección de cambios
+
     const from = this.fromDate.toISOString();
     const to = this.toDate.toISOString();
     this.reportsService.getBudgetVsExecution(from, to).subscribe({
       next: (data) => {
         this.reportData = data;
         this.isLoading = false;
+        this.cdr.detectChanges(); // Forzar detección de cambios
       },
       error: (err) => {
         console.error('Error loading report:', err);
         const msg = err?.readableMessage || err?.message || 'Error cargando reporte';
         alert(msg);
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
     });
   }

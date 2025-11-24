@@ -22,7 +22,6 @@ export class ExpensesGridComponent implements OnInit {
   expenseTypesDataSource: DataSource;
   expenseTypesStore: CustomStore;
   fundsEditorOptions: any;
-  detailsGridOptions: any;
   currentDetailsData: any;
   currentDetailsValue: any[] = [];
   expenseTypesMap: Map<number, string> = new Map();
@@ -42,9 +41,12 @@ export class ExpensesGridComponent implements OnInit {
     return typeNames.join(', ');
   };
 
+  calculateStatus = (rowData: any) => {
+    return rowData.isValid === false ? 'Inactivo' : 'Activo';
+  };
+
   validateDetails = (e: any) => {
     const details = e.value;
-    console.log('Validando detalles:', details);
     if (!details || !Array.isArray(details) || details.length === 0) {
       return false;
     }
@@ -52,7 +54,6 @@ export class ExpensesGridComponent implements OnInit {
   };
 
   onDetailsGridInitialized(e: any, data: any) {
-    console.log('Grid de detalles inicializado', data);
     this.currentDetailsData = data;
   }
 
@@ -61,12 +62,20 @@ export class ExpensesGridComponent implements OnInit {
     if (e.component && this.currentDetailsData) {
       const gridInstance = e.component;
       const dataSource = gridInstance.option('dataSource') || [];
-      console.log('Detalles actualizados:', dataSource);
       this.currentDetailsValue = [...dataSource];
       // Update the form value
       if (this.currentDetailsData.setValue) {
         this.currentDetailsData.setValue(this.currentDetailsValue);
       }
+    }
+  }
+
+  onEditingStart(e: any) {
+    if (e.data && e.data.details) {
+      // Cargar los detalles existentes en el valor actual
+      this.currentDetailsValue = [...e.data.details];
+    } else {
+      this.currentDetailsValue = [];
     }
   }
 
@@ -102,42 +111,6 @@ export class ExpensesGridComponent implements OnInit {
       placeholder: 'Select a fund...',
     };
 
-    this.detailsGridOptions = {
-      dataSource: [],
-      showBorders: true,
-      editing: {
-        mode: 'batch',
-        allowAdding: true,
-        allowUpdating: true,
-        allowDeleting: true,
-      },
-      columns: [
-        {
-          dataField: 'expenseTypeId',
-          caption: 'Expense Type ID',
-          dataType: 'number',
-          validationRules: [
-            { type: 'required' },
-            { type: 'range', min: 1, message: 'Must be > 0' },
-          ],
-        },
-        {
-          dataField: 'amount',
-          caption: 'Amount',
-          dataType: 'number',
-          format: 'currency',
-          validationRules: [
-            { type: 'required' },
-            { type: 'range', min: 0.01, message: 'Must be > 0' },
-          ],
-        },
-        {
-          dataField: 'description',
-          caption: 'Description',
-        },
-      ],
-    };
-
     this.dataSource = new CustomStore({
       key: 'id',
       load: (loadOptions: any) => {
@@ -152,9 +125,6 @@ export class ExpensesGridComponent implements OnInit {
         });
       },
       insert: (values) => {
-        console.log('Valores recibidos para insertar:', values);
-        console.log('Detalles almacenados:', this.currentDetailsValue);
-
         // Use stored details if values.details is empty
         const detailsToUse =
           Array.isArray(values.details) && values.details.length > 0
@@ -170,8 +140,6 @@ export class ExpensesGridComponent implements OnInit {
               : [],
         };
 
-        console.log('Expense a enviar:', expense);
-
         // Validar que tenga al menos un detalle
         if (expense.details.length === 0) {
           return Promise.reject(
@@ -181,7 +149,22 @@ export class ExpensesGridComponent implements OnInit {
 
         return lastValueFrom(this.expensesService.create(expense));
       },
-      update: (key, values) => lastValueFrom(this.expensesService.update(key, values)),
+      update: (key, values) => {
+        const detailsToUse =
+          Array.isArray(values.details) && values.details.length > 0
+            ? values.details
+            : this.currentDetailsValue;
+
+        const expense = {
+          ...values,
+          details:
+            Array.isArray(detailsToUse) && detailsToUse.length > 0
+              ? detailsToUse.filter((d: any) => d.expenseTypeId && d.amount > 0)
+              : undefined,
+        };
+
+        return lastValueFrom(this.expensesService.update(key, expense));
+      },
       remove: (key) => lastValueFrom(this.expensesService.delete(key)),
     });
   }

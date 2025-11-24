@@ -31,14 +31,25 @@ export class ExpenseTypesGridComponent implements OnInit {
       key: 'id',
       load: () => lastValueFrom(this.expenseTypesService.getAll()),
       insert: (values) => {
-        const newValues = { ...values, isActive: this.editingRowState };
-        return lastValueFrom(this.expenseTypesService.create(newValues));
+        // Usar el valor actual de editingRowState que puede haber sido modificado por toggleStateInForm
+        const newValues = {
+          ...values,
+          isActive: this.editingRowState !== undefined ? this.editingRowState : true,
+        };
+        return lastValueFrom(this.expenseTypesService.create(newValues)).catch((err) => {
+          const msg = this.extractErrorMessage(err);
+          throw new Error(msg);
+        });
       },
       update: (key, values) => {
         // Siempre incluir el estado actual
         const updatedValues = { ...values, isActive: this.editingRowState };
-        console.log('Updating expense type:', key, updatedValues);
-        return lastValueFrom(this.expenseTypesService.update(String(key), updatedValues));
+        return lastValueFrom(this.expenseTypesService.update(String(key), updatedValues)).catch(
+          (err) => {
+            const msg = this.extractErrorMessage(err);
+            throw new Error(msg);
+          }
+        );
       },
     });
   }
@@ -180,5 +191,43 @@ export class ExpenseTypesGridComponent implements OnInit {
       msg = 'Ocurrió un error';
     }
     e.error = msg;
+  }
+
+  private extractErrorMessage(err: any): string {
+    // Extraer el mensaje de error del backend
+    if (err?.error) {
+      // Si el error contiene el mensaje de duplicidad
+      if (typeof err.error === 'string') {
+        if (err.error.includes('already exists')) {
+          return 'Ya existe un tipo de gasto con ese nombre';
+        }
+        return err.error;
+      }
+
+      // Si es un objeto con readableMessage o message
+      if (err.error.readableMessage) {
+        if (err.error.readableMessage.includes('already exists')) {
+          return 'Ya existe un tipo de gasto con ese nombre';
+        }
+        return err.error.readableMessage;
+      }
+
+      if (err.error.message) {
+        if (err.error.message.includes('already exists')) {
+          return 'Ya existe un tipo de gasto con ese nombre';
+        }
+        return err.error.message;
+      }
+    }
+
+    // Si el error tiene mensaje directamente
+    if (err?.message) {
+      if (err.message.includes('already exists')) {
+        return 'Ya existe un tipo de gasto con ese nombre';
+      }
+      return err.message;
+    }
+
+    return 'Ocurrió un error al procesar la solicitud';
   }
 }

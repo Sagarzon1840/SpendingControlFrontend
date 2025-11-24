@@ -1,25 +1,22 @@
 <div class="movements-grid-container p-4">
-  <h3 class="text-xl font-bold mb-4">Movements</h3>
+  <h3 class="text-xl font-bold mb-4">Movimientos</h3>
 
-  <div class="flex gap-4 mb-4">
-    <div class="flex items-center gap-2">
-      <label>From:</label>
-      <dx-date-box
-        [(value)]="fromDate"
-        type="date"
-        (onValueChanged)="onDateChanged()"
-        [displayFormat]="'yyyy-MM-dd'"
-      ></dx-date-box>
+  <div class="flex gap-4 mb-4 items-end">
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">Desde:</label>
+      <dx-date-box [(value)]="fromDate" type="date" [displayFormat]="'yyyy-MM-dd'"></dx-date-box>
     </div>
-    <div class="flex items-center gap-2">
-      <label>To:</label>
-      <dx-date-box
-        [(value)]="toDate"
-        type="date"
-        (onValueChanged)="onDateChanged()"
-        [displayFormat]="'yyyy-MM-dd'"
-      ></dx-date-box>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">Hasta:</label>
+      <dx-date-box [(value)]="toDate" type="date" [displayFormat]="'yyyy-MM-dd'"></dx-date-box>
     </div>
+    <button
+      type="button"
+      class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors font-medium"
+      (click)="searchMovements()"
+    >
+      Buscar
+    </button>
   </div>
 
   <dx-data-grid
