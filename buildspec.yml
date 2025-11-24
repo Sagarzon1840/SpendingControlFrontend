@@ -3,8 +3,6 @@ version: 0.2
 phases:
   install:
     commands:
-      - echo "ENTERING FRONTEND FOLDER"
-      - cd spending-control-frontend
       - echo "Installing Angular CLI..."
       - npm install -g @angular/cli@21
       - echo "Installing dependencies..."
@@ -12,10 +10,10 @@ phases:
 
   build:
     commands:
-      - echo "Building Angular app..."
+      - echo "Building Angular project..."
       - ng build --configuration production
 
 artifacts:
-  base-directory: 'spending-control-frontend/dist/spending-control-frontend/browser'
   files:
     - '**/*'
+  base-directory: 'dist/spending-control-frontend/browser'
