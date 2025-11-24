@@ -1,0 +1,67 @@
+<div class="budgets-grid-container p-4">
+  <h3 class="text-xl font-bold mb-4">Presupuestos por Tipo de Gasto</h3>
+
+  <div class="flex gap-4 mb-4 items-end">
+    <div class="flex flex-col gap-2">
+      <label class="font-semibold">Seleccionar Mes:</label>
+      <div class="flex items-center gap-2 border rounded p-2 bg-white">
+        <dx-button icon="chevronleft" stylingMode="text" (onClick)="previousMonth()"></dx-button>
+        <span class="px-4 font-medium min-w-[150px] text-center">
+          {{ selectedDate | date : 'MMMM yyyy' }}
+        </span>
+        <dx-button icon="chevronright" stylingMode="text" (onClick)="nextMonth()"></dx-button>
+      </div>
+    </div>
+    <dx-button text="Buscar" icon="search" type="default" (onClick)="refreshGrid()"></dx-button>
+  </div>
+
+  <dx-data-grid
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [columnAutoWidth]="true"
+    [rowAlternationEnabled]="true"
+    (onDataErrorOccurred)="handleGridError($event)"
+  >
+    <dxo-editing mode="popup" [allowAdding]="true" [allowUpdating]="true" [allowDeleting]="true">
+      <dxo-popup title="Presupuesto" [showTitle]="true" [width]="400" [height]="300"></dxo-popup>
+      <dxo-form [colCount]="1">
+        <dxi-item
+          dataField="spendTypeId"
+          caption="Tipo de Gasto"
+          editorType="dxSelectBox"
+          [editorOptions]="{
+            dataSource: expenseTypesDataSource,
+            displayExpr: 'name',
+            valueExpr: 'id',
+            searchEnabled: true
+          }"
+        >
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item
+          dataField="amount"
+          caption="Monto"
+          editorType="dxNumberBox"
+          [editorOptions]="{
+            format: 'currency',
+            min: 0
+          }"
+        >
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+          <dxi-validation-rule
+            type="range"
+            [min]="0.01"
+            message="Debe ser mayor que 0"
+          ></dxi-validation-rule>
+        </dxi-item>
+      </dxo-form>
+    </dxo-editing>
+
+    <dxi-column dataField="spendTypeId" caption="Tipo de Gasto">
+      <dxo-lookup [dataSource]="expenseTypesStore" displayExpr="name" valueExpr="id"></dxo-lookup>
+    </dxi-column>
+    <dxi-column dataField="year" caption="Año" [allowEditing]="false"></dxi-column>
+    <dxi-column dataField="month" caption="Mes" [allowEditing]="false"></dxi-column>
+    <dxi-column dataField="amount" caption="Monto" format="currency"></dxi-column>
+  </dx-data-grid>
+</div>

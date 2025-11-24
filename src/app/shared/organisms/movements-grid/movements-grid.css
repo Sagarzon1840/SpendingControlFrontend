@@ -1,0 +1,6 @@
+/* Movements grid styles */
+.movements-grid-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}

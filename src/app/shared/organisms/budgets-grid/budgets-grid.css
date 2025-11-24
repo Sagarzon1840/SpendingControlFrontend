@@ -1,0 +1,10 @@
+.budgets-grid-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+}

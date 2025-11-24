@@ -1,0 +1,46 @@
+<div class="movements-grid-container p-4">
+  <h3 class="text-xl font-bold mb-4">Movements</h3>
+
+  <div class="flex gap-4 mb-4">
+    <div class="flex items-center gap-2">
+      <label>From:</label>
+      <dx-date-box
+        [(value)]="fromDate"
+        type="date"
+        (onValueChanged)="onDateChanged()"
+        [displayFormat]="'yyyy-MM-dd'"
+      ></dx-date-box>
+    </div>
+    <div class="flex items-center gap-2">
+      <label>To:</label>
+      <dx-date-box
+        [(value)]="toDate"
+        type="date"
+        (onValueChanged)="onDateChanged()"
+        [displayFormat]="'yyyy-MM-dd'"
+      ></dx-date-box>
+    </div>
+  </div>
+
+  <dx-data-grid
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [remoteOperations]="true"
+    [columnAutoWidth]="true"
+    [rowAlternationEnabled]="true"
+    (onDataErrorOccurred)="handleGridError($event)"
+  >
+    <dxo-paging [pageSize]="20"></dxo-paging>
+    <dxo-pager
+      [showPageSizeSelector]="true"
+      [allowedPageSizes]="[10, 20, 50, 100]"
+      [showInfo]="true"
+    ></dxo-pager>
+
+    <dxi-column dataField="date" caption="Fecha" dataType="date" [width]="120"></dxi-column>
+    <dxi-column dataField="fundName" caption="Fondo" [width]="150"></dxi-column>
+    <dxi-column dataField="type" caption="Tipo" [width]="120"></dxi-column>
+    <dxi-column dataField="amount" caption="Monto" format="currency" [width]="120"></dxi-column>
+    <dxi-column dataField="description" caption="Descripción"></dxi-column>
+  </dx-data-grid>
+</div>

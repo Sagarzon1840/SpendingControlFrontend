@@ -1,0 +1,139 @@
+<div class="expenses-grid-container p-4">
+  <h3 class="text-xl font-bold mb-4">Gastos</h3>
+  <dx-data-grid
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [remoteOperations]="true"
+    [columnAutoWidth]="true"
+    [rowAlternationEnabled]="true"
+    (onDataErrorOccurred)="handleGridError($event)"
+    (onRowInserted)="onRowInserted($event)"
+  >
+    <dxo-editing mode="popup" [allowAdding]="true" [allowUpdating]="true" [allowDeleting]="true">
+      <dxo-popup
+        title="Información del Gasto"
+        [showTitle]="true"
+        [width]="800"
+        [height]="600"
+      ></dxo-popup>
+      <dxo-form [colCount]="1">
+        <dxi-item itemType="group" caption="Información del Gasto" [colCount]="1">
+          <dxi-item
+            dataField="monetaryFundId"
+            caption="Fondo"
+            editorType="dxSelectBox"
+            [editorOptions]="fundsEditorOptions"
+          >
+            <dxi-validation-rule type="required"></dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="date"
+            editorType="dxDateBox"
+            [editorOptions]="{ type: 'date', displayFormat: 'yyyy-MM-dd' }"
+          >
+            <dxi-validation-rule type="required"></dxi-validation-rule>
+          </dxi-item>
+          <dxi-item dataField="merchantName">
+            <dxi-validation-rule type="stringLength" [max]="200"></dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="documentType"
+            editorType="dxSelectBox"
+            [editorOptions]="{ items: documentTypes }"
+          >
+            <dxi-validation-rule type="required"></dxi-validation-rule>
+          </dxi-item>
+          <dxi-item
+            dataField="observations"
+            editorType="dxTextArea"
+            [editorOptions]="{ height: 80 }"
+          >
+            <dxi-validation-rule type="stringLength" [max]="1000"></dxi-validation-rule>
+          </dxi-item>
+        </dxi-item>
+        <dxi-item itemType="group" caption="Detalles del Gasto" [colCount]="1">
+          <dxi-item dataField="details" template="detailsEditorTemplate">
+            <dxi-validation-rule
+              type="custom"
+              [validationCallback]="validateDetails"
+              message="Se requiere al menos un detalle con valores válidos"
+            ></dxi-validation-rule>
+          </dxi-item>
+        </dxi-item>
+      </dxo-form>
+    </dxo-editing>
+
+    <dxo-paging [pageSize]="10"></dxo-paging>
+    <dxo-pager
+      [showPageSizeSelector]="true"
+      [allowedPageSizes]="[10, 20, 50]"
+      [showInfo]="true"
+    ></dxo-pager>
+
+    <dxo-master-detail [enabled]="true" template="detail"></dxo-master-detail>
+
+    <dxi-column dataField="monetaryFundId" caption="Fondo" [visible]="false"></dxi-column>
+    <dxi-column dataField="date" dataType="date" caption="Fecha"> </dxi-column>
+    <dxi-column dataField="merchantName" caption="Comercio"> </dxi-column>
+    <dxi-column
+      caption="Tipos de Gasto"
+      [calculateCellValue]="calculateExpenseTypes"
+      [allowEditing]="false"
+    ></dxi-column>
+    <dxi-column dataField="documentType" caption="Tipo de Documento">
+      <dxo-lookup [dataSource]="documentTypes"></dxo-lookup>
+    </dxi-column>
+    <dxi-column dataField="observations" caption="Observaciones" [visible]="false"> </dxi-column>
+    <dxi-column dataField="details" caption="Detalles" [visible]="false"> </dxi-column>
+
+    <div *dxTemplate="let data of 'detailsEditorTemplate'">
+      <dx-data-grid
+        [dataSource]="data.value || []"
+        [showBorders]="true"
+        [columnAutoWidth]="true"
+        (onInitialized)="onDetailsGridInitialized($event, data)"
+        (onRowInserted)="onDetailsChanged($event)"
+        (onRowUpdated)="onDetailsChanged($event)"
+        (onRowRemoved)="onDetailsChanged($event)"
+      >
+        <dxo-editing
+          mode="batch"
+          [allowAdding]="true"
+          [allowUpdating]="true"
+          [allowDeleting]="true"
+        >
+        </dxo-editing>
+        <dxi-column dataField="expenseTypeId" caption="Tipo de Gasto">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+          <dxo-lookup
+            [dataSource]="expenseTypesStore"
+            displayExpr="name"
+            valueExpr="id"
+          ></dxo-lookup>
+        </dxi-column>
+        <dxi-column dataField="amount" caption="Monto" dataType="number" format="currency">
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+          <dxi-validation-rule
+            type="range"
+            [min]="0.01"
+            message="Debe ser > 0"
+          ></dxi-validation-rule>
+        </dxi-column>
+        <dxi-column dataField="description" caption="Descripción"></dxi-column>
+      </dx-data-grid>
+    </div>
+
+    <div *dxTemplate="let expense of 'detail'">
+      <div class="master-detail-caption font-bold mb-2">Detalles del Gasto</div>
+      <dx-data-grid
+        [dataSource]="expense.data.details"
+        [showBorders]="true"
+        [columnAutoWidth]="true"
+      >
+        <dxi-column dataField="expenseTypeId" caption="ID Tipo"></dxi-column>
+        <dxi-column dataField="amount" format="currency" caption="Monto"></dxi-column>
+        <dxi-column dataField="description" caption="Descripción"></dxi-column>
+      </dx-data-grid>
+    </div>
+  </dx-data-grid>
+</div>

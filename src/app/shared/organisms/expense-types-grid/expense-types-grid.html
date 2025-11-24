@@ -1,0 +1,80 @@
+<div class="expense-types-grid-container p-4">
+  <h3 class="text-xl font-bold mb-4">Tipos de Gasto</h3>
+  <dx-data-grid
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [columnAutoWidth]="true"
+    [rowAlternationEnabled]="true"
+    (onDataErrorOccurred)="handleGridError($event)"
+    (onInitialized)="onInitialized($event)"
+    (onRowUpdating)="onRowUpdating($event)"
+    (onSaving)="onSaving($event)"
+    (onEditorPreparing)="onEditorPreparing($event)"
+    (onEditingStart)="onEditingStart($event)"
+    (onEditCanceled)="onEditCanceled()"
+  >
+    <dxo-editing mode="popup" [allowAdding]="true" [allowUpdating]="true" [allowDeleting]="false">
+      <dxo-popup title="Tipo de Gasto" [showTitle]="true" [width]="500" [height]="450"></dxo-popup>
+      <dxo-form [colCount]="1">
+        <dxi-item dataField="name" caption="Nombre">
+          <dxi-validation-rule
+            type="required"
+            message="El nombre es requerido"
+          ></dxi-validation-rule>
+          <dxi-validation-rule
+            type="stringLength"
+            [max]="200"
+            message="Máximo 200 caracteres"
+          ></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item dataField="isActive" [visible]="false"></dxi-item>
+        <dxi-item itemType="simple" caption="Estado">
+          <div *dxTemplate>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+              <div>
+                <span class="font-medium">Estado: </span>
+                <span
+                  [class]="
+                    editingRowState ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'
+                  "
+                >
+                  {{ editingRowState ? 'Activo' : 'Inactivo' }}
+                </span>
+              </div>
+              <button
+                type="button"
+                [class]="
+                  editingRowState
+                    ? 'px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600'
+                    : 'px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600'
+                "
+                (click)="toggleStateInForm()"
+              >
+                {{ editingRowState ? 'Desactivar' : 'Activar' }}
+              </button>
+            </div>
+          </div>
+        </dxi-item>
+      </dxo-form>
+      <dxo-texts
+        addRow="Nuevo tipo de gasto"
+        editRow="Editar"
+        saveRowChanges="Guardar"
+        cancelRowChanges="Cancelar"
+      ></dxo-texts>
+    </dxo-editing>
+
+    <dxi-column dataField="code" caption="Código" [allowEditing]="false"></dxi-column>
+    <dxi-column dataField="name" caption="Nombre"></dxi-column>
+    <dxi-column
+      dataField="isActive"
+      caption="Estado"
+      [allowEditing]="false"
+      dataType="string"
+      [calculateCellValue]="customizeStateText"
+    ></dxi-column>
+    <dxi-column type="buttons">
+      <dxi-button name="edit"></dxi-button>
+    </dxi-column>
+  </dx-data-grid>
+</div>

@@ -1,0 +1,11 @@
+.funds-grid-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.funds-grid-container dx-data-grid {
+  flex: 1 1 auto;
+  height: 100%;
+}

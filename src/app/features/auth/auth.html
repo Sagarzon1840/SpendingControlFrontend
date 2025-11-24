@@ -1,0 +1,230 @@
+<div
+  class="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
+>
+  <div class="max-w-md w-full">
+    <!-- Logo and Title -->
+    <div class="text-center mb-8">
+      <div class="mx-auto h-16 w-16 bg-white rounded-full flex items-center justify-center mb-4">
+        <ng-icon name="heroCurrencyDollar" class="text-blue-600" size="40"></ng-icon>
+      </div>
+      <h1 class="text-4xl font-extrabold text-white">Control de Gastos</h1>
+      <p class="mt-2 text-sm text-blue-100">Administra tus gastos de manera eficiente</p>
+    </div>
+
+    <!-- Card Container -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+      <!-- Success Message -->
+      @if (successMessage) {
+      <div
+        class="mb-4 bg-green-50 border border-green-400 text-green-700 px-4 py-3 rounded-lg"
+        role="alert"
+      >
+        <div class="flex items-center">
+          <ng-icon name="heroCheckCircle" class="mr-2" size="20"></ng-icon>
+          <span>{{ successMessage }}</span>
+        </div>
+      </div>
+      }
+
+      <!-- Error Message -->
+      @if (errorMessage) {
+      <div
+        class="mb-4 bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded-lg"
+        role="alert"
+      >
+        <div class="flex items-center">
+          <ng-icon name="heroXCircle" class="mr-2" size="20"></ng-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+      </div>
+      }
+
+      <!-- Tabs -->
+      <div class="flex border-b border-gray-200 mb-6">
+        <button
+          (click)="toggleMode()"
+          [class]="
+            isLoginMode
+              ? 'border-b-2 border-blue-600 text-blue-600'
+              : 'text-gray-500 hover:text-gray-700'
+          "
+          class="flex-1 py-2 px-4 text-center font-medium transition-colors"
+        >
+          Iniciar Sesión
+        </button>
+        <button
+          (click)="toggleMode()"
+          [class]="
+            !isLoginMode
+              ? 'border-b-2 border-blue-600 text-blue-600'
+              : 'text-gray-500 hover:text-gray-700'
+          "
+          class="flex-1 py-2 px-4 text-center font-medium transition-colors"
+        >
+          Registrarse
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      @if (isLoginMode) {
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-4">
+        <div>
+          <label for="login-username" class="block text-sm font-medium text-gray-700 mb-1">
+            Usuario <span class="text-red-500">*</span>
+          </label>
+          <app-input
+            type="text"
+            placeholder="Ingresa tu usuario"
+            [hasError]="loginForm.get('username')!.invalid && loginForm.get('username')!.touched"
+            formControlName="username"
+          ></app-input>
+          @if (getErrorMessage(loginForm, 'username')) {
+          <p class="mt-1 text-sm text-red-600">
+            {{ getErrorMessage(loginForm, 'username') }}
+          </p>
+          }
+        </div>
+
+        <div>
+          <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">
+            Contraseña <span class="text-red-500">*</span>
+          </label>
+          <app-input
+            type="password"
+            placeholder="Ingresa tu contraseña"
+            [hasError]="loginForm.get('password')!.invalid && loginForm.get('password')!.touched"
+            formControlName="password"
+          ></app-input>
+          @if (getErrorMessage(loginForm, 'password')) {
+          <p class="mt-1 text-sm text-red-600">
+            {{ getErrorMessage(loginForm, 'password') }}
+          </p>
+          }
+        </div>
+
+        <app-button
+          type="submit"
+          variant="primary"
+          [fullWidth]="true"
+          [disabled]="isLoading"
+          size="lg"
+        >
+          @if (!isLoading) {
+          <span>Iniciar Sesión</span>
+          } @if (isLoading) {
+          <span class="flex items-center justify-center">
+            <span
+              class="inline-block h-5 w-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"
+            ></span>
+            Iniciando sesión...
+          </span>
+          }
+        </app-button>
+      </form>
+      }
+
+      <!-- Register Form -->
+      @if (!isLoginMode) {
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="space-y-4">
+        <div>
+          <label for="register-username" class="block text-sm font-medium text-gray-700 mb-1">
+            Usuario <span class="text-red-500">*</span>
+          </label>
+          <app-input
+            type="text"
+            placeholder="Elige un nombre de usuario"
+            [hasError]="
+              registerForm.get('username')!.invalid && registerForm.get('username')!.touched
+            "
+            formControlName="username"
+          ></app-input>
+          @if (getErrorMessage(registerForm, 'username')) {
+          <p class="mt-1 text-sm text-red-600">
+            {{ getErrorMessage(registerForm, 'username') }}
+          </p>
+          }
+        </div>
+
+        <div>
+          <label for="register-name" class="block text-sm font-medium text-gray-700 mb-1">
+            Nombre <span class="text-red-500">*</span>
+          </label>
+          <app-input
+            type="text"
+            placeholder="Ingresa tu nombre"
+            [hasError]="registerForm.get('name')!.invalid && registerForm.get('name')!.touched"
+            formControlName="name"
+          ></app-input>
+          @if (getErrorMessage(registerForm, 'name')) {
+          <p class="mt-1 text-sm text-red-600">
+            {{ getErrorMessage(registerForm, 'name') }}
+          </p>
+          }
+        </div>
+
+        <div>
+          <label for="register-password" class="block text-sm font-medium text-gray-700 mb-1">
+            Contraseña <span class="text-red-500">*</span>
+          </label>
+          <app-input
+            type="password"
+            placeholder="Crea una contraseña"
+            [hasError]="
+              registerForm.get('password')!.invalid && registerForm.get('password')!.touched
+            "
+            formControlName="password"
+          ></app-input>
+          @if (getErrorMessage(registerForm, 'password')) {
+          <p class="mt-1 text-sm text-red-600">
+            {{ getErrorMessage(registerForm, 'password') }}
+          </p>
+          }
+        </div>
+
+        <div>
+          <label for="register-confirm" class="block text-sm font-medium text-gray-700 mb-1">
+            Confirmar Contraseña <span class="text-red-500">*</span>
+          </label>
+          <app-input
+            type="password"
+            placeholder="Confirma tu contraseña"
+            [hasError]="
+              registerForm.get('confirmPassword')!.invalid &&
+              registerForm.get('confirmPassword')!.touched
+            "
+            formControlName="confirmPassword"
+          ></app-input>
+          @if (getErrorMessage(registerForm, 'confirmPassword')) {
+          <p class="mt-1 text-sm text-red-600">
+            {{ getErrorMessage(registerForm, 'confirmPassword') }}
+          </p>
+          }
+        </div>
+
+        <app-button
+          type="submit"
+          variant="primary"
+          [fullWidth]="true"
+          [disabled]="isLoading"
+          size="lg"
+        >
+          @if (!isLoading) {
+          <span>Crear Cuenta</span>
+          } @if (isLoading) {
+          <span class="flex items-center justify-center">
+            <span
+              class="inline-block h-5 w-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin"
+            ></span>
+            Creando cuenta...
+          </span>
+          }
+        </app-button>
+      </form>
+      }
+    </div>
+
+    <p class="text-center text-sm text-white mt-4">
+      &copy; 2024 Control de Gastos. Todos los derechos reservados.
+    </p>
+  </div>
+</div>

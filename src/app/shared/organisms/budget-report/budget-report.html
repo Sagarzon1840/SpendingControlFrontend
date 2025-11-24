@@ -1,0 +1,77 @@
+<div class="budget-report-container p-4">
+  <h3 class="text-xl font-bold mb-4">Reporte Presupuesto vs Gastos</h3>
+
+  <div class="flex gap-4 mb-4 items-end">
+    <div class="flex flex-col gap-2">
+      <label class="font-semibold">From:</label>
+      <dx-date-box [(value)]="fromDate" type="date" [displayFormat]="'yyyy-MM-dd'"></dx-date-box>
+    </div>
+    <div class="flex flex-col gap-2">
+      <label class="font-semibold">To:</label>
+      <dx-date-box [(value)]="toDate" type="date" [displayFormat]="'yyyy-MM-dd'"></dx-date-box>
+    </div>
+    <dx-button
+      text="Generar Reporte"
+      type="default"
+      [disabled]="isLoading"
+      (onClick)="loadReport()"
+    ></dx-button>
+  </div>
+
+  @if (reportData.length > 0) {
+  <dx-data-grid
+    [dataSource]="reportData"
+    [showBorders]="true"
+    [columnAutoWidth]="true"
+    [rowAlternationEnabled]="true"
+  >
+    <dxi-column dataField="expenseTypeName" caption="Tipo de Gasto"></dxi-column>
+    <dxi-column dataField="budget" caption="Presupuesto" format="currency"></dxi-column>
+    <dxi-column dataField="executed" caption="Gasto" format="currency"></dxi-column>
+    <dxi-column
+      caption="Variación"
+      [calculateCellValue]="calculateVariance"
+      format="currency"
+      [cellTemplate]="'varianceTemplate'"
+    ></dxi-column>
+    <dxi-column
+      caption="% Ejecutado"
+      [calculateCellValue]="calculateVariancePercent"
+      format="percent"
+      [customizeText]="customizePercentText"
+    ></dxi-column>
+
+    <div *dxTemplate="let data of 'varianceTemplate'">
+      <span [class]="data.value < 0 ? 'text-red-600 font-bold' : 'text-green-600'">
+        {{ data.text }}
+      </span>
+    </div>
+  </dx-data-grid>
+  } @if (reportData.length > 0) {
+  <dx-chart [dataSource]="reportData" class="mt-6">
+    <dxi-series
+      valueField="budget"
+      argumentField="expenseTypeName"
+      name="Presupuesto"
+      type="bar"
+    ></dxi-series>
+    <dxi-series
+      valueField="executed"
+      argumentField="expenseTypeName"
+      name="Gasto"
+      type="bar"
+    ></dxi-series>
+    <dxo-common-series-settings [argumentField]="'expenseTypeName'"></dxo-common-series-settings>
+    <dxo-legend
+      [visible]="true"
+      verticalAlignment="bottom"
+      horizontalAlignment="center"
+    ></dxo-legend>
+    <dxo-title text="Presupuesto vs Gastos"></dxo-title>
+  </dx-chart>
+  } @if (reportData.length === 0 && !isLoading) {
+  <div class="text-center text-gray-500 py-8">
+    No hay datos disponibles para el período seleccionado
+  </div>
+  }
+</div>

@@ -1,0 +1,74 @@
+<div class="funds-grid-container p-4">
+  <h3 class="text-xl font-bold mb-4">Fondos Monetarios</h3>
+  <dx-data-grid
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [columnAutoWidth]="true"
+    [rowAlternationEnabled]="true"
+    (onDataErrorOccurred)="handleGridError($event)"
+  >
+    <dxo-editing mode="popup" [allowUpdating]="true" [allowDeleting]="true" [allowAdding]="true">
+      <!-- Altura controlada para evitar exceso de espacio sin reintroducir scroll -->
+      <dxo-popup
+        title="Información del Fondo"
+        [showTitle]="true"
+        [width]="700"
+        [height]="popupHeight"
+      ></dxo-popup>
+      <dxo-form [colCount]="1">
+        <dxi-item itemType="group" caption="Información General" [colCount]="1">
+          <dxi-item dataField="name" [editorOptions]="{ width: '100%' }"></dxi-item>
+          <dxi-item
+            dataField="type"
+            editorType="dxSelectBox"
+            [editorOptions]="{
+              items: fundTypes,
+              displayExpr: 'name',
+              valueExpr: 'id',
+              width: '100%'
+            }"
+          ></dxi-item>
+          <dxi-item
+            dataField="initialBalance"
+            editorType="dxNumberBox"
+            [editorOptions]="{ format: 'currency', width: '100%' }"
+          ></dxi-item>
+          <dxi-item
+            dataField="accountNumberOrDescription"
+            [editorOptions]="{ width: '100%' }"
+          ></dxi-item>
+        </dxi-item>
+      </dxo-form>
+    </dxo-editing>
+    <dxi-column
+      dataField="name"
+      caption="Nombre"
+      [validationRules]="[{ type: 'required' }, { type: 'stringLength', min: 1, max: 200 }]"
+    ></dxi-column>
+    <dxi-column dataField="type" caption="Tipo" [validationRules]="[{ type: 'required' }]">
+      <dxo-lookup [dataSource]="fundTypes" displayExpr="name" valueExpr="id"></dxo-lookup>
+    </dxi-column>
+    <dxi-column
+      dataField="initialBalance"
+      caption="Saldo Inicial"
+      dataType="number"
+      format="currency"
+      [validationRules]="[
+        { type: 'required' },
+        { type: 'range', min: 0, message: 'El saldo inicial debe ser >= 0' }
+      ]"
+    ></dxi-column>
+    <dxi-column
+      dataField="currentBalance"
+      caption="Saldo Actual"
+      dataType="number"
+      format="currency"
+      [allowEditing]="false"
+    ></dxi-column>
+    <dxi-column
+      dataField="accountNumberOrDescription"
+      caption="Cuenta/Descripción"
+      [validationRules]="[{ type: 'stringLength', max: 100 }]"
+    ></dxi-column>
+  </dx-data-grid>
+</div>

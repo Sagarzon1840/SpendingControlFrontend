@@ -1,0 +1,135 @@
+<div class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <div class="w-64 bg-white shadow-md flex flex-col">
+    <div class="p-6 border-b">
+      <h1 class="text-2xl font-bold text-gray-800">Control de Gastos</h1>
+    </div>
+    <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+      <!-- Mantenimientos -->
+      <div class="mb-4">
+        <h3 class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Mantenimientos</h3>
+        <button
+          class="w-full text-left px-4 py-2 rounded-md transition-colors text-sm"
+          [ngClass]="{
+            'bg-blue-500 text-white': currentView === 'expense-types',
+            'text-gray-700 hover:bg-gray-200': currentView !== 'expense-types'
+          }"
+          (click)="setView('expense-types')"
+        >
+          Tipos de Gasto
+        </button>
+        <button
+          class="w-full text-left px-4 py-2 rounded-md transition-colors text-sm"
+          [ngClass]="{
+            'bg-blue-500 text-white': currentView === 'funds',
+            'text-gray-700 hover:bg-gray-200': currentView !== 'funds'
+          }"
+          (click)="setView('funds')"
+        >
+          Fondo Monetario
+        </button>
+      </div>
+
+      <!-- Movimientos -->
+      <div class="mb-4">
+        <h3 class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Movimientos</h3>
+        <button
+          class="w-full text-left px-4 py-2 rounded-md transition-colors text-sm"
+          [ngClass]="{
+            'bg-blue-500 text-white': currentView === 'budgets',
+            'text-gray-700 hover:bg-gray-200': currentView !== 'budgets'
+          }"
+          (click)="setView('budgets')"
+        >
+          Presupuesto por tipo de gasto
+        </button>
+        <button
+          class="w-full text-left px-4 py-2 rounded-md transition-colors text-sm"
+          [ngClass]="{
+            'bg-blue-500 text-white': currentView === 'expenses',
+            'text-gray-700 hover:bg-gray-200': currentView !== 'expenses'
+          }"
+          (click)="setView('expenses')"
+        >
+          Gastos
+        </button>
+        <button
+          class="w-full text-left px-4 py-2 rounded-md transition-colors text-sm"
+          [ngClass]="{
+            'bg-blue-500 text-white': currentView === 'deposits',
+            'text-gray-700 hover:bg-gray-200': currentView !== 'deposits'
+          }"
+          (click)="setView('deposits')"
+        >
+          Depósitos
+        </button>
+      </div>
+
+      <!-- Consultas y Reportes -->
+      <div class="mb-4">
+        <h3 class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase">
+          Consultas y Reportes
+        </h3>
+        <button
+          class="w-full text-left px-4 py-2 rounded-md transition-colors text-sm"
+          [ngClass]="{
+            'bg-blue-500 text-white': currentView === 'movements',
+            'text-gray-700 hover:bg-gray-200': currentView !== 'movements'
+          }"
+          (click)="setView('movements')"
+        >
+          Consulta de movimientos
+        </button>
+        <button
+          class="w-full text-left px-4 py-2 rounded-md transition-colors text-sm"
+          [ngClass]="{
+            'bg-blue-500 text-white': currentView === 'reports',
+            'text-gray-700 hover:bg-gray-200': currentView !== 'reports'
+          }"
+          (click)="setView('reports')"
+        >
+          Gráfico Comparativo de Presupuesto y Ejecución
+        </button>
+      </div>
+    </nav>
+    <div class="p-4 border-t bg-gray-50">
+      <app-button variant="danger" [fullWidth]="true" (clicked)="logout()">
+        <ng-icon name="heroArrowRightOnRectangle" class="inline-block mr-2" size="20"></ng-icon>
+        Cerrar Sesión
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 overflow-auto p-8">
+    @if (currentView === 'expense-types') {
+    <div>
+      <app-expense-types-grid></app-expense-types-grid>
+    </div>
+    } @if (currentView === 'funds') {
+    <div>
+      <app-funds-grid></app-funds-grid>
+    </div>
+    } @if (currentView === 'budgets') {
+    <div>
+      <app-budgets-grid></app-budgets-grid>
+    </div>
+    } @if (currentView === 'expenses') {
+    <div>
+      <app-expenses-grid></app-expenses-grid>
+    </div>
+    } @if (currentView === 'deposits') {
+    <div>
+      <app-deposits-grid></app-deposits-grid>
+    </div>
+    } @if (currentView === 'movements') {
+    <div>
+      <app-movements-grid></app-movements-grid>
+    </div>
+    } @if (currentView === 'reports') {
+    <div>
+      <app-budget-report></app-budget-report>
+    </div>
+    }
+  </div>
+</div>

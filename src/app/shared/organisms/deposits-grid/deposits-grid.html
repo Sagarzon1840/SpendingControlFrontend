@@ -1,0 +1,107 @@
+<div class="deposits-grid-container p-4">
+  <h3 class="text-xl font-bold mb-4">Depósitos</h3>
+
+  <div class="mb-4">
+    <label class="font-semibold mb-2 block">Seleccionar Fondo:</label>
+    <dx-select-box
+      [dataSource]="fundsSelectDataSource"
+      [(value)]="selectedFundId"
+      displayExpr="name"
+      valueExpr="id"
+      [width]="300"
+      placeholder="Seleccione un fondo"
+      [searchEnabled]="false"
+      [deferRendering]="false"
+      (onSelectionChanged)="onFundChange($event)"
+    ></dx-select-box>
+  </div>
+
+  @if (selectedFund) {
+  <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+    <h4 class="text-lg font-semibold mb-2">{{ selectedFund.name }}</h4>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <p class="text-sm text-gray-600">Tipo:</p>
+        <p class="font-medium">{{ selectedFund.type }}</p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-600">Saldo Actual:</p>
+        <p class="font-bold text-xl text-green-600">
+          {{ selectedFund.currentBalance | currency }}
+        </p>
+      </div>
+      @if (selectedFund.accountNumberOrDescription) {
+      <div class="col-span-2">
+        <p class="text-sm text-gray-600">Descripción:</p>
+        <p class="font-medium">{{ selectedFund.accountNumberOrDescription }}</p>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  <dx-data-grid
+    [dataSource]="dataSource"
+    [showBorders]="true"
+    [columnAutoWidth]="true"
+    [rowAlternationEnabled]="true"
+    (onDataErrorOccurred)="handleGridError($event)"
+  >
+    <dxo-editing mode="popup" [allowAdding]="true" [allowUpdating]="false" [allowDeleting]="false">
+      <dxo-popup title="Nuevo Depósito" [showTitle]="true" [width]="500" [height]="400"></dxo-popup>
+      <dxo-form [colCount]="1">
+        <dxi-item
+          dataField="fundId"
+          caption="Fondo Monetario"
+          editorType="dxSelectBox"
+          [editorOptions]="{
+            dataSource: fundsDataSource,
+            displayExpr: 'name',
+            valueExpr: 'id',
+            searchEnabled: true
+          }"
+        >
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item
+          dataField="date"
+          caption="Fecha"
+          editorType="dxDateBox"
+          [editorOptions]="{
+            type: 'date',
+            displayFormat: 'yyyy-MM-dd'
+          }"
+        >
+        </dxi-item>
+        <dxi-item
+          dataField="amount"
+          caption="Monto"
+          editorType="dxNumberBox"
+          [editorOptions]="{
+            format: 'currency',
+            min: 0
+          }"
+        >
+          <dxi-validation-rule type="required"></dxi-validation-rule>
+          <dxi-validation-rule
+            type="range"
+            [min]="0.01"
+            message="Debe ser mayor que 0"
+          ></dxi-validation-rule>
+        </dxi-item>
+        <dxi-item
+          dataField="description"
+          caption="Descripción"
+          editorType="dxTextArea"
+          [editorOptions]="{ height: 80 }"
+        >
+        </dxi-item>
+      </dxo-form>
+    </dxo-editing>
+
+    <dxi-column dataField="fundId" caption="Fondo" [visible]="false"></dxi-column>
+    <dxi-column dataField="date" dataType="date" caption="Fecha"></dxi-column>
+    <dxi-column dataField="amount" caption="Monto" format="currency"></dxi-column>
+    <dxi-column dataField="description" caption="Descripción"></dxi-column>
+  </dx-data-grid>
+</div>

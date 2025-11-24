@@ -1,0 +1,17 @@
+<div class="dx-field">
+  @if (label) {
+  <div class="dx-field-label">{{ label }}</div>
+  }
+  <div class="dx-field-value">
+    <dx-text-box
+      [value]="value"
+      [placeholder]="placeholder"
+      [mode]="mode"
+      [showClearButton]="showClearButton"
+      [disabled]="disabled"
+      (onValueChanged)="onValueChanged($event)"
+    >
+      <dx-validator [validationRules]="validationRules"></dx-validator>
+    </dx-text-box>
+  </div>
+</div>
