@@ -10,6 +10,27 @@ phases:
       - echo "Installing dependencies..."
       - npm ci
 
+  pre_build:
+    commands:
+      - echo "Creating environment files..."
+      - mkdir -p src/environments
+      - |
+        cat > src/environments/environment.ts << 'EOF'
+        export const environment = {
+          production: false,
+          apiUrl: 'https://localhost:7100'
+        };
+        EOF
+      - |
+        cat > src/environments/environment.prod.ts << 'EOF'
+        export const environment = {
+          production: true,
+          apiUrl: '${API_URL}'
+        };
+        EOF
+      - echo "Environment files created successfully"
+      - ng version
+
   build:
     commands:
       - echo "Building Angular project..."
